@@ -1,0 +1,56 @@
+fieldset {
+  margin-bottom: 2rem;
+
+  .options {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .clip-options {
+      display: flex;
+      flex-wrap: wrap;
+
+      mat-checkbox {
+        margin-right: 2rem;
+      }
+    }
+
+    .search-options {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.category-selector {
+  display: flex;
+
+  mat-form-field {
+    flex-grow: 1;
+  }
+
+  input[type=file] {
+    display: none;
+  }
+
+  a {
+    cursor: pointer;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-option {
+  height: unset;
+  line-height: unset;
+  padding-top: 1rem;
+
+  .explanations {
+    color: #999;
+    font-size: smaller;
+    padding-top: .5rem;
+    padding-bottom: 1rem;
+  }
+}
