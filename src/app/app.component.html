@@ -1,50 +1,58 @@
-<form [formGroup]="form">
-  <fieldset>
-    <legend>Options</legend>
-    <div class="options">
-      <div class="clip-options" matTooltip="Choose the values that will be placed on the clipboard on selection.">
-        <mat-checkbox color="primary" formControlName="category">Category</mat-checkbox>
-        <mat-checkbox color="primary" formControlName="subCategory">SubCategory</mat-checkbox>
-        <mat-checkbox color="primary" formControlName="catID">CatID</mat-checkbox>
-        <mat-checkbox color="primary" formControlName="catShort">CatShort</mat-checkbox>
+<mat-tab-group>
+  <mat-tab label="Category">
+    <form [formGroup]="categoryForm">
+      <fieldset>
+        <legend>Options</legend>
+        <div class="options">
+          <div class="clip-options" matTooltip="Choose the values that will be placed on the clipboard on selection.">
+            <mat-checkbox color="primary" formControlName="category">Category</mat-checkbox>
+            <mat-checkbox color="primary" formControlName="subCategory">SubCategory</mat-checkbox>
+            <mat-checkbox color="primary" formControlName="catID">CatID</mat-checkbox>
+            <mat-checkbox color="primary" formControlName="catShort">CatShort</mat-checkbox>
+          </div>
+          <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
+            <mat-checkbox color="accent" class="synonyms" formControlName="searchSynonyms">Search Synonyms</mat-checkbox>
+          </div>
+        </div>
+      </fieldset>
+      <div class="category-selector">
+        <mat-form-field>
+          <input
+            matInput
+            tab-directive
+            type="text"
+            placeholder="Select Category"
+            matTooltip="Selecting an item from the list will put it on the clipboard."
+            [matAutocomplete]="auto"
+            formControlName="keyword"
+          >
+          <a mat-button class="clear" *ngIf="categoryForm.value.keyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearKeyword()">
+            <mat-icon color="primary">close</mat-icon>
+          </a>
+          <label for="import-file" matSuffix>
+            <a mat-icon-button class="import" matTooltip="Import Category File">
+              <mat-icon color="accent">unarchive</mat-icon>
+            </a>
+          </label>
+          </mat-form-field>
+        <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
       </div>
-      <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
-        <mat-checkbox color="accent" class="synonyms" formControlName="searchSynonyms">Search Synonyms</mat-checkbox>
-      </div>
-    </div>
-  </fieldset>
-  <div class="category-selector">
-    <mat-form-field>
-      <input
-        matInput
-        tab-directive
-        type="text"
-        placeholder="Select Category"
-        matTooltip="Selecting an item from the list will put it on the clipboard."
-        [matAutocomplete]="auto"
-        formControlName="keyword"
-      >
-      <a mat-button class="clear" *ngIf="form.value.keyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearKeyword()">
-        <mat-icon color="primary">close</mat-icon>
-      </a>
-      <label for="import-file" matSuffix>
-        <a mat-icon-button class="import" matTooltip="Import Category File">
-          <mat-icon color="accent">unarchive</mat-icon>
-        </a>
-      </label>
-      </mat-form-field>
-    <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
-  </div>
 
 
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="formatCategoryItem" autoActiveFirstOption="true">
-    <mat-option *ngFor="let item of filteredCategoryItems | async" [value]="item" (onSelectionChange)="categorySelected(item)">
-      <div class="main">
-        {{item.category}} {{item.subCategory}} {{item.catID}}
-      </div>
-      <div class="explanations">
-        {{item.explanations}}
-      </div>
-    </mat-option>
-  </mat-autocomplete>
-</form>
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="formatCategoryItem" autoActiveFirstOption="true">
+        <mat-option *ngFor="let item of filteredCategoryItems | async" [value]="item" (onSelectionChange)="categorySelected(item)">
+          <div class="main">
+            {{item.category}} {{item.subCategory}} {{item.catID}}
+          </div>
+          <div class="explanations">
+            {{item.explanations}}
+          </div>
+        </mat-option>
+      </mat-autocomplete>
+    </form>
+  </mat-tab>
+
+  <mat-tab label="Filename">
+    File clipping
+  </mat-tab>
+</mat-tab-group>

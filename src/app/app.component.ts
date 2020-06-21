@@ -23,8 +23,8 @@ interface CategoryItem {
 })
 export class AppComponent implements OnInit {
 
-  public form: FormGroup;
-  public keywordControl = new FormControl();
+  public categoryForm: FormGroup;
+  public categoryKeywordControl = new FormControl();
 
   public categoryItems: CategoryItem[];
   public filteredCategoryItems: Observable<CategoryItem[]>;
@@ -47,18 +47,18 @@ export class AppComponent implements OnInit {
         this.categoryItems = DEFAULT_CATEGORIES;
       }
 
-      this.form = this.fb.group({
+      this.categoryForm = this.fb.group({
         category: true,
         subCategory: true,
         catID: true,
         catShort: false,
         searchSynonyms: true,
-        keyword: this.keywordControl,
+        keyword: this.categoryKeywordControl,
       });
     }
 
   ngOnInit() {
-    this.filteredCategoryItems = this.keywordControl.valueChanges.pipe(
+    this.filteredCategoryItems = this.categoryKeywordControl.valueChanges.pipe(
       startWith(''),
       map((value) => this.filterItems(value))
     );
@@ -66,16 +66,16 @@ export class AppComponent implements OnInit {
 
   public categorySelected(item: CategoryItem) {
     let text = '';
-    if (this.form.value.category) {
+    if (this.categoryForm.value.category) {
       text += (' ' + item.category);
     }
-    if (this.form.value.subCategory) {
+    if (this.categoryForm.value.subCategory) {
       text += (' ' + item.subCategory);
     }
-    if (this.form.value.catID) {
+    if (this.categoryForm.value.catID) {
       text += (' ' + item.catID);
     }
-    if (this.form.value.catShort) {
+    if (this.categoryForm.value.catShort) {
       text += (' ' + item.catShort);
     }
     text = text.trim();
@@ -91,7 +91,7 @@ export class AppComponent implements OnInit {
   }
 
   public clearKeyword() {
-    this.keywordControl.setValue({ category: '', subCategory: '', catID: '', catShort: '' });
+    this.categoryKeywordControl.setValue({ category: '', subCategory: '', catID: '', catShort: '' });
   }
 
   public importFile(evt: any) {
@@ -141,7 +141,7 @@ export class AppComponent implements OnInit {
       let found = item.category.toLowerCase().includes(filterValue) ||
         item.subCategory.toLocaleLowerCase().includes(filterValue) ||
         item.catID.toLocaleLowerCase().includes(filterValue);
-      if (!found && this.form.value.searchSynonyms) {
+      if (!found && this.categoryForm.value.searchSynonyms) {
         found = item.synonyms.toLocaleLowerCase().includes(filterValue);
       }
       return found;
