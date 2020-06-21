@@ -1,7 +1,7 @@
 {
-  "name": "audio-category-clipper",
+  "name": "keyword-clip",
   "version": "0.0.1",
-  "author" : {
+  "author": {
     "name": "Steve Paquin"
   },
   "contributors": [
