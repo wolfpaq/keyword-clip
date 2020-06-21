@@ -1,6 +1,14 @@
 {
-  "name": "keyword-clip",
-  "version": "0.0.0",
+  "name": "audio-category-clipper",
+  "version": "0.0.1",
+  "author" : {
+    "name": "Steve Paquin"
+  },
+  "contributors": [
+    {
+      "name": "Kai Paquin"
+    }
+  ],
   "main": "main.js",
   "scripts": {
     "ng": "ng",
@@ -11,7 +19,8 @@
     "build": "ng build",
     "package": " cat dist/keyword-clip/{polyfills-es5,runtime-es5,styles-es5,vendor-es5,main-es5}.js > dist/keyword-clip/package.js",
     "bundle": "npm run build && npm run package",
-    "start:electron": "ng build --base-href ./ && electron ."
+    "start:electron": "ng build --base-href ./ && electron .",
+    "package:electron": "electron-packager ."
   },
   "private": true,
   "dependencies": {
@@ -41,6 +50,7 @@
     "@types/webpack-env": "^1.15.2",
     "codelyzer": "^5.1.2",
     "electron": "^9.0.4",
+    "electron-packager": "^14.2.1",
     "electron-reload": "^1.5.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
