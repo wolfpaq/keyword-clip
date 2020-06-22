@@ -11,7 +11,7 @@
             <mat-checkbox color="primary" formControlName="catShort">CatShort</mat-checkbox>
           </div>
           <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
-            <mat-checkbox color="accent" class="synonyms" formControlName="searchSynonyms">Search Synonyms</mat-checkbox>
+            <mat-checkbox color="accent" class="synonyms" formControlName="searchCategorySynonyms">Search Synonyms</mat-checkbox>
           </div>
         </div>
       </fieldset>
@@ -23,10 +23,10 @@
             type="text"
             placeholder="Select Category"
             matTooltip="Selecting an item from the list will put it on the clipboard."
-            [matAutocomplete]="auto"
-            formControlName="keyword"
+            [matAutocomplete]="categoryAuto"
+            formControlName="categoryKeyword"
           >
-          <a mat-button class="clear" *ngIf="categoryForm.value.keyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearKeyword()">
+          <a mat-button class="clear" *ngIf="categoryForm.value.categoryKeyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearCategoryKeyword()">
             <mat-icon color="primary">close</mat-icon>
           </a>
           <label for="import-file" matSuffix>
@@ -38,8 +38,7 @@
         <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
       </div>
 
-
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="formatCategoryItem" autoActiveFirstOption="true">
+      <mat-autocomplete #categoryAuto="matAutocomplete" [displayWith]="formatCategoryItem" autoActiveFirstOption="true">
         <mat-option *ngFor="let item of filteredCategoryItems | async" [value]="item" (onSelectionChange)="categorySelected(item)">
           <div class="main">
             {{item.category}} {{item.subCategory}} {{item.catID}}
@@ -53,6 +52,73 @@
   </mat-tab>
 
   <mat-tab label="Filename">
-    File clipping
+    <form [formGroup]="filenameForm">
+      <fieldset>
+        <legend>Options</legend>
+        <div class="options">
+          <div class="clip-options">
+            <mat-form-field>
+              <input matInput formControlName="userCategory" placeholder="User Category (optional)" (input)="updateFilename(null)">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="fxName" required placeholder="FX Name" (input)="updateFilename(null)">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="initials" required placeholder="User Initials" (input)="updateFilename(null)">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="show" required placeholder="Show Name" (input)="updateFilename(null)">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="userInfo" required placeholder="User Info" (input)="updateFilename(null)">
+            </mat-form-field>
+          </div>
+          <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
+            <mat-checkbox color="accent" class="synonyms" formControlName="searchFilenameSynonyms">Search Synonyms</mat-checkbox>
+          </div>
+        </div>
+      </fieldset>
+      <div class="category-selector">
+        <mat-form-field>
+          <input
+            matInput
+            tab-directive
+            type="text"
+            placeholder="Select Category"
+            matTooltip="Select the category to use in the filename."
+            [matAutocomplete]="filenameAuto"
+            formControlName="filenameKeyword"
+            required
+          >
+          <a mat-button class="clear" *ngIf="filenameForm.value.filenameKeyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearFilenameKeyword()">
+            <mat-icon color="primary">close</mat-icon>
+          </a>
+          <label for="import-file" matSuffix>
+            <a mat-icon-button class="import" matTooltip="Import Category File">
+              <mat-icon color="accent">unarchive</mat-icon>
+            </a>
+          </label>
+          </mat-form-field>
+        <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
+      </div>
+
+      <mat-autocomplete #filenameAuto="matAutocomplete" [displayWith]="formatCategoryItem" autoActiveFirstOption="true">
+        <mat-option *ngFor="let filenameItem of filteredFilenameItems | async" [value]="filenameItem" (onSelectionChange)="updateFilename(filenameItem)">
+          <div class="main">
+            {{filenameItem.category}} {{filenameItem.subCategory}} {{filenameItem.catID}}
+          </div>
+          <div class="explanations">
+            {{filenameItem.explanations}}
+          </div>
+        </mat-option>
+      </mat-autocomplete>
+
+      <div class="filename-display">
+        <h2>{{ filename }}</h2>
+        <button mat-icon-button class="file-copy" matTooltip="Copy Filename to Clipboard" [disabled]="filenameForm.invalid" (click)="copyFilename()">
+          <mat-icon color="primary">file_copy</mat-icon>
+        </button>
+      </div>
+    </form>
   </mat-tab>
 </mat-tab-group>

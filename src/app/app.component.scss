@@ -15,6 +15,12 @@ fieldset {
       flex-wrap: wrap;
 
       mat-checkbox {
+        margin: 1rem 0;
+
+        margin-right: 2rem;
+      }
+
+      mat-form-field {
         margin-right: 2rem;
       }
     }
@@ -22,6 +28,18 @@ fieldset {
     .search-options {
       display: flex;
       justify-content: flex-end;
+      margin: auto 0;
+    }
+  }
+}
+
+.filename-options {
+  display: flex;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    &:not(:first-child) {
+      margin-left: 1rem;
     }
   }
 }
@@ -33,6 +51,10 @@ fieldset {
     flex-grow: 1;
   }
 
+  mat-form-field {
+    width: 100%;
+  }
+
   input[type=file] {
     display: none;
   }
@@ -40,10 +62,6 @@ fieldset {
   a {
     cursor: pointer;
   }
-}
-
-mat-form-field {
-  width: 100%;
 }
 
 mat-option {
@@ -56,5 +74,19 @@ mat-option {
     font-size: smaller;
     padding-top: .5rem;
     padding-bottom: 1rem;
+  }
+}
+
+.filename-display {
+  display: flex;
+
+  .file-copy {
+    margin: auto 1rem;
+  }
+}
+
+.mat-icon-button {
+  &[disabled] {
+    opacity: .5;
   }
 }

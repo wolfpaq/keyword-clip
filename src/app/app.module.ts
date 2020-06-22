@@ -13,6 +13,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
 import { TabDirective } from './tab-directive';
 import { ClipboardService } from './clipboard.service';
 
@@ -34,6 +35,7 @@ import { ClipboardService } from './clipboard.service';
     MatIconModule,
     MatTooltipModule,
     MatTabsModule,
+    MatButtonModule,
   ],
   providers: [
     ClipboardService,
