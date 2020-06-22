@@ -37,7 +37,8 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      devTools: false
     }
   });
 
@@ -49,10 +50,7 @@ function createWindow () {
     })
   );
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-  menu.items[1].click = () => {    // Sar Mainenance
-    mainWindow.webContents.send('importFile', 'someArg');
-  }
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('closed', function () {
     mainWindow = null
