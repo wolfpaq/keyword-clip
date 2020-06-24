@@ -1,5 +1,12 @@
 form {
   margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+
+  .script {
+    margin-top: 2rem;
+    width: 100%;
+  }
 }
 
 fieldset {

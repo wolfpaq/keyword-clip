@@ -48,6 +48,10 @@
           </div>
         </mat-option>
       </mat-autocomplete>
+      <mat-form-field *ngIf="isMac" class="script" appearance="outline">
+        <mat-label>Applescript to run after category selection</mat-label>
+        <textarea matInput rows="10" formControlName="categoryScript"></textarea>
+      </mat-form-field>
     </form>
   </mat-tab>
 
@@ -119,6 +123,10 @@
           <mat-icon color="primary">file_copy</mat-icon>
         </button>
       </div>
+      <mat-form-field *ngIf="isMac" class="script" appearance="outline">
+        <mat-label>Applescript to run after filename sent to clipboard</mat-label>
+        <textarea matInput rows="10" formControlName="filenameScript"></textarea>
+      </mat-form-field>
     </form>
   </mat-tab>
 </mat-tab-group>

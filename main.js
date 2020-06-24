@@ -1,8 +1,9 @@
-const { app, BrowserWindow, Menu } = require('electron')
-const url = require("url");
-const path = require("path");
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const url = require('url');
+const path = require('path');
+const applescript = require('applescript');
 
-const isMac = process.platform === 'darwin'
+const isMac = process.platform === 'darwin';
 
 const template = [
   ...(isMac ? [{
@@ -25,6 +26,26 @@ const template = [
       isMac ? { role: 'close' } : { role: 'quit' }
     ]
   },
+  {
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      ...(isMac ? [
+        { role: 'pasteAndMatchStyle' },
+        { role: 'delete' },
+        { role: 'selectAll' },
+      ] : [
+        { role: 'delete' },
+        { type: 'separator' },
+        { role: 'selectAll' }
+      ])
+    ]
+  },
 ];
 
 const menu = Menu.buildFromTemplate(template)
@@ -45,7 +66,7 @@ function createWindow () {
   mainWindow.loadURL(
     url.format({
       pathname: path.join(__dirname, `/dist/index.html`),
-      protocol: "file:",
+      protocol: 'file:',
       slashes: true
     })
   );
@@ -65,5 +86,16 @@ app.on('window-all-closed', function () {
 
 app.on('activate', function () {
   if (mainWindow === null) createWindow()
+});
+
+ipcMain.on('run-applescript', (event, arg) => {
+  console.log('run-applescript', event, arg);
+  applescript.execString(arg, (err, result) => {
+    if (err) {
+      console.log('ERROR', err);
+    } else {
+      console.log('RESULT', result);
+    }
+  });
 });
 

@@ -5,6 +5,7 @@ import { FormControl, FormGroup, FormBuilder, AbstractControl } from '@angular/f
 import { ClipboardService } from './clipboard.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEFAULT_CATEGORIES } from './default-categories';
+import { ElectronService } from 'ngx-electron';
 import * as xslx from 'xlsx';
 
 interface CategoryItem {
@@ -35,45 +36,48 @@ export class AppComponent implements OnInit {
 
   public filename = '';
 
+  public isMac = false;
+
   constructor(
     private fb: FormBuilder,
     private clipboard: ClipboardService,
     private snackBar: MatSnackBar,
-    ) {
-      // electron.ipcRenderer.on('importFile', (arg) => {
-      //   console.log('import', arg);
-      // });
+    private electron: ElectronService,
+  ) {
+    this.isMac = this.electron.isMacOS;
 
-      const categories = localStorage.getItem('categories');
-      if (categories) {
-        console.log('loading categories from local storage');
-        this.categoryItems = JSON.parse(categories);
-      } else {
-        console.log('loading default categories');
-        this.categoryItems = DEFAULT_CATEGORIES;
-      }
-
-      this.categoryForm = this.fb.group({
-        category: true,
-        subCategory: true,
-        catID: true,
-        catShort: false,
-        searchCategorySynonyms: true,
-        categoryKeyword: this.categoryKeywordControl,
-      });
-
-      this.filenameForm = this.fb.group({
-        userCategory: '',
-        fxName: '',
-        initials: localStorage.getItem('initials') || '',
-        show: localStorage.getItem('show') || '',
-        userInfo: '',
-        searchFilenameSynonyms: true,
-        filenameKeyword: this.filenameKeywordControl,
-      });
-
-      this.updateFilename(null);
+    const categories = localStorage.getItem('categories');
+    if (categories) {
+      console.log('loading categories from local storage');
+      this.categoryItems = JSON.parse(categories);
+    } else {
+      console.log('loading default categories');
+      this.categoryItems = DEFAULT_CATEGORIES;
     }
+
+    this.categoryForm = this.fb.group({
+      category: true,
+      subCategory: true,
+      catID: true,
+      catShort: false,
+      searchCategorySynonyms: true,
+      categoryKeyword: this.categoryKeywordControl,
+      categoryScript: '',
+    });
+
+    this.filenameForm = this.fb.group({
+      userCategory: '',
+      fxName: '',
+      initials: localStorage.getItem('initials') || '',
+      show: localStorage.getItem('show') || '',
+      userInfo: '',
+      searchFilenameSynonyms: true,
+      filenameKeyword: this.filenameKeywordControl,
+      filenameScript: '',
+    });
+
+    this.updateFilename(null);
+  }
 
   ngOnInit() {
     this.filteredCategoryItems = this.categoryKeywordControl.valueChanges.pipe(
@@ -108,8 +112,8 @@ export class AppComponent implements OnInit {
     if (text) {
       this.clipboard.copyText(text);
       this.snackBar.open(`'${text}' copied to the clipboard`, null, { duration: 3000 });
-      console.log('categorySelected', text);
-      }
+      this.runApplescript(this.categoryForm.value.categoryScript);
+    }
   }
 
   public formatCategoryItem(item: CategoryItem): string | null {
@@ -142,8 +146,6 @@ export class AppComponent implements OnInit {
   }
 
   public updateFilename(item: CategoryItem | null) {
-    console.log('updateFilename', item, this.filenameForm.value);
-    // catID-UserCategory_FXName_ShowName_UserInfo
     const selectedItem = item ? item : this.filenameForm.value.filenameKeyword;
     const catId = selectedItem ? selectedItem.catID : '?';
     const userCategory = this.filenameForm.value.userCategory ? ('-' + this.filenameForm.value.userCategory) : '';
@@ -160,10 +162,10 @@ export class AppComponent implements OnInit {
     localStorage.setItem('initials', this.filenameForm.value.initials);
     localStorage.setItem('show', this.filenameForm.value.show);
 
+    this.runApplescript(this.filenameForm.value.filenameScript);
   }
 
   private categoryValidator(control?: AbstractControl): { [key: string]: boolean } | null {
-    console.log('categoryValidator', control.value);
     return control.value && control.value.catID ? null : { invalidTime: true };
   }
 
@@ -206,5 +208,11 @@ export class AppComponent implements OnInit {
       }
       return found;
     });
+  }
+
+  private runApplescript(script: string) {
+    if (script) {
+      this.electron.ipcRenderer.send('run-applescript', script);
+    }
   }
 }
