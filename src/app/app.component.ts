@@ -211,7 +211,7 @@ export class AppComponent implements OnInit {
   }
 
   private runApplescript(script: string) {
-    if (script) {
+    if (this.isMac && script) {
       this.electron.ipcRenderer.send('run-applescript', script);
     }
   }
