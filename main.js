@@ -2,14 +2,19 @@ const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const url = require('url');
 const path = require('path');
 const applescript = require('applescript');
+const { shell } = require('electron');
 
 const isMac = process.platform === 'darwin';
 
 const template = [
   ...(isMac ? [{
-    label: 'Audio Category Clipper',
+    label: 'AudioCategoryClipper',
     submenu: [
-      { role: 'about' },
+      // { role: 'about' },
+      {
+        label: 'About AudioCategoryClipper',
+        click: async () =>  await shell.openExternal('https://github.com/wolfpaq/keyword-clip'),
+      },
       { type: 'separator' },
       { role: 'services' },
       { type: 'separator' },
@@ -46,6 +51,44 @@ const template = [
       ])
     ]
   },
+  {
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forcereload' },
+      { role: 'toggledevtools' },
+      { type: 'separator' },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  },
+  {
+    label: 'Window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'zoom' },
+      ...(isMac ? [
+        { type: 'separator' },
+        { role: 'front' },
+        { type: 'separator' },
+        { role: 'window' }
+      ] : [
+        { role: 'close' }
+      ])
+    ]
+  },
+  {
+    role: 'help',
+    submenu: [
+      {
+        label: 'About',
+        click: async () =>  await shell.openExternal('https://github.com/wolfpaq/keyword-clip'),
+      }
+    ]
+  }
 ];
 
 const menu = Menu.buildFromTemplate(template)
@@ -59,8 +102,9 @@ function createWindow () {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-      devTools: false
-    }
+      devTools: true
+    },
+    title: 'AudioCategoryClipper'
   });
 
   mainWindow.loadURL(

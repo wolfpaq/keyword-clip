@@ -1,6 +1,6 @@
 {
   "name": "keyword-clip",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "author": {
     "name": "Steve Paquin"
   },
@@ -20,7 +20,7 @@
     "package": " cat dist/keyword-clip/{polyfills-es5,runtime-es5,styles-es5,vendor-es5,main-es5}.js > dist/keyword-clip/package.js",
     "bundle": "npm run build && npm run package",
     "start:electron": "ng build --base-href ./ && electron .",
-    "package:electron": "electron-packager ."
+    "package:electron": "electron-packager . AudioCategoryClipper"
   },
   "private": true,
   "dependencies": {
