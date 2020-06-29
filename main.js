@@ -65,6 +65,21 @@ const template = [
       { role: 'togglefullscreen' }
     ]
   },
+  ...(isMac ? [{
+    label: 'Run',
+    submenu: [
+      {
+        label: 'Applescript',
+        accelerator: 'F5',
+        click: async () =>  await runApplescript(),
+      },
+      {
+        label: 'Copy Filename',
+        accelerator: 'Cmd+F',
+        click: async () =>  await copyFilename(),
+      },
+    ]
+    }] : []),
   {
     label: 'Window',
     submenu: [
@@ -100,6 +115,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    minWidth: 500,
+    minHeight: 500,
     webPreferences: {
       nodeIntegration: true,
       devTools: true
@@ -133,7 +150,6 @@ app.on('activate', function () {
 });
 
 ipcMain.on('run-applescript', (event, arg) => {
-  console.log('run-applescript', event, arg);
   applescript.execString(arg, (err, result) => {
     if (err) {
       console.log('ERROR', err);
@@ -142,4 +158,18 @@ ipcMain.on('run-applescript', (event, arg) => {
     }
   });
 });
+
+async function runApplescript() {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send('run-applescript');
+    resolve();
+  });
+}
+
+async function copyFilename() {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send('copy-filename');
+    resolve();
+  });
+}
 
