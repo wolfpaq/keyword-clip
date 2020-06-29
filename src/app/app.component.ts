@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DEFAULT_CATEGORIES } from './default-categories';
 import { ElectronService } from 'ngx-electron';
 import * as xslx from 'xlsx';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 interface CategoryItem {
   category: string;
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
   public filename = '';
 
   public isMac = false;
+  public selectedTab = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -55,6 +57,7 @@ export class AppComponent implements OnInit {
       this.categoryItems = DEFAULT_CATEGORIES;
     }
 
+    const autorunCategoryScript = !!localStorage.getItem('autorunCategoryScript');
     this.categoryForm = this.fb.group({
       category: true,
       subCategory: true,
@@ -63,8 +66,10 @@ export class AppComponent implements OnInit {
       searchCategorySynonyms: true,
       categoryKeyword: this.categoryKeywordControl,
       categoryScript: '',
+      autorunCategoryScript: autorunCategoryScript,
     });
 
+    const autorunFilenameScript = !!localStorage.getItem('autorunFilenameScript');
     this.filenameForm = this.fb.group({
       userCategory: '',
       fxName: '',
@@ -72,11 +77,23 @@ export class AppComponent implements OnInit {
       show: localStorage.getItem('show') || '',
       userInfo: '',
       searchFilenameSynonyms: true,
+
       filenameKeyword: this.filenameKeywordControl,
       filenameScript: '',
+      autorunFilenameScript: autorunFilenameScript,
     });
 
     this.updateFilename(null);
+
+    this.electron.ipcRenderer.on('run-applescript', () => {
+      this.runApplescriptForTab(this.selectedTab);
+    });
+
+    this.electron.ipcRenderer.on('copy-filename', () => {
+      if (this.filenameForm.valid) {
+        this.copyFilename();
+      }
+    });
   }
 
   ngOnInit() {
@@ -112,7 +129,9 @@ export class AppComponent implements OnInit {
     if (text) {
       this.clipboard.copyText(text);
       this.snackBar.open(`'${text}' copied to the clipboard`, null, { duration: 3000 });
-      this.runApplescript(this.categoryForm.value.categoryScript);
+      if (this.categoryForm.value.autorunCategoryScript) {
+        this.runApplescript(this.categoryForm.value.categoryScript);
+      }
     }
   }
 
@@ -162,7 +181,37 @@ export class AppComponent implements OnInit {
     localStorage.setItem('initials', this.filenameForm.value.initials);
     localStorage.setItem('show', this.filenameForm.value.show);
 
-    this.runApplescript(this.filenameForm.value.filenameScript);
+    if (this.filenameForm.value.autorunFilenameScript) {
+      this.runApplescript(this.filenameForm.value.filenameScript);
+    }
+  }
+
+  public runApplescriptForTab(tab: number) {
+    if (tab === 0) {
+      if (this.runApplescript(this.categoryForm.value.categoryScript)) {
+        this.snackBar.open('Ran applescript for \'Category\' tab', null, { duration: 3000 });
+      };
+    } else if (tab === 1) {
+      if (this.runApplescript(this.filenameForm.value.filenameScript)) {
+        this.snackBar.open('Ran applescript for \'Filename\' tab', null, { duration: 3000 });
+      };
+    }
+  }
+
+  public changeAutorunCategoryScript(evt: MatCheckboxChange) {
+    if (evt.checked) {
+      localStorage.setItem('autorunCategoryScript', 'true');
+    } else {
+      localStorage.removeItem('autorunCategoryScript');
+    }
+  }
+
+  public changeAutorunFilenameScript(evt: MatCheckboxChange) {
+    if (evt.checked) {
+      localStorage.setItem('autorunFilenameScript', 'true');
+    } else {
+      localStorage.removeItem('autorunFilenameScript');
+    }
   }
 
   private categoryValidator(control?: AbstractControl): { [key: string]: boolean } | null {
@@ -210,9 +259,11 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private runApplescript(script: string) {
+  private runApplescript(script: string): boolean {
     if (this.isMac && script) {
       this.electron.ipcRenderer.send('run-applescript', script);
+      return true;
     }
+    return false;
   }
 }

@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group (selectedIndexChange)="selectedTab = $event">
   <mat-tab label="Category">
     <form [formGroup]="categoryForm">
       <fieldset>
@@ -52,6 +52,10 @@
         <mat-label>Applescript to run after category selection</mat-label>
         <textarea matInput rows="10" formControlName="categoryScript"></textarea>
       </mat-form-field>
+      <div class="actions">
+        <mat-checkbox formControlName="autorunCategoryScript" (change)="changeAutorunCategoryScript($event)">Run script automatically when category is selected</mat-checkbox>
+        <button mat-button color="primary" [disabled]="!categoryForm.value.categoryScript" (click)="runApplescriptForTab(0)">Run Applescript</button>
+      </div>
     </form>
   </mat-tab>
 
@@ -127,6 +131,10 @@
         <mat-label>Applescript to run after filename sent to clipboard</mat-label>
         <textarea matInput rows="10" formControlName="filenameScript"></textarea>
       </mat-form-field>
+      <div class="actions">
+        <mat-checkbox formControlName="autorunFilenameScript" (change)="changeAutorunFilenameScript($event)">Run script automatically when filename is clipped to clipboard</mat-checkbox>
+        <button mat-button color="primary" [disabled]="!filenameForm.value.filenameScript" (click)="runApplescriptForTab(1)">Run Applescript</button>
+      </div>
     </form>
   </mat-tab>
 </mat-tab-group>

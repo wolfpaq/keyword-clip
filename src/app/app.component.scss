@@ -97,3 +97,18 @@ mat-option {
     opacity: .5;
   }
 }
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 2px 0;
+
+  mat-checkbox {
+    margin: auto 0;
+  }
+
+  button {
+    margin: auto 0;
+  }
+}
