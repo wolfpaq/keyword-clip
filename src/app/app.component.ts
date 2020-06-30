@@ -85,15 +85,17 @@ export class AppComponent implements OnInit {
 
     this.updateFilename(null);
 
-    this.electron.ipcRenderer.on('run-applescript', () => {
-      this.runApplescriptForTab(this.selectedTab);
-    });
+    if (this.electron.ipcRenderer) {
+      this.electron.ipcRenderer.on('run-applescript', () => {
+        this.runApplescriptForTab(this.selectedTab);
+      });
 
-    this.electron.ipcRenderer.on('copy-filename', () => {
-      if (this.filenameForm.valid) {
-        this.copyFilename();
-      }
-    });
+      this.electron.ipcRenderer.on('copy-filename', () => {
+        if (this.filenameForm.valid) {
+          this.copyFilename();
+        }
+      });
+    }
   }
 
   ngOnInit() {
