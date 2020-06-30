@@ -66,7 +66,7 @@ export class AppComponent implements OnInit {
       searchCategorySynonyms: true,
       categoryKeyword: this.categoryKeywordControl,
       categoryScript: '',
-      autorunCategoryScript: autorunCategoryScript,
+      autorunCategoryScript,
     });
 
     const autorunFilenameScript = !!localStorage.getItem('autorunFilenameScript');
@@ -80,7 +80,7 @@ export class AppComponent implements OnInit {
 
       filenameKeyword: this.filenameKeywordControl,
       filenameScript: '',
-      autorunFilenameScript: autorunFilenameScript,
+      autorunFilenameScript,
     });
 
     this.updateFilename(null);

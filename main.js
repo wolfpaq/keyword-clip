@@ -48,7 +48,7 @@ const template = [
         { role: 'delete' },
         { type: 'separator' },
         { role: 'selectAll' }
-      ])
+      ]),
     ]
   },
   {
@@ -65,21 +65,45 @@ const template = [
       { role: 'togglefullscreen' }
     ]
   },
-  ...(isMac ? [{
+  {
     label: 'Run',
-    submenu: [
-      {
+    submenu:[
+      ...(isMac ? [
+        {
         label: 'Applescript',
         accelerator: 'F5',
         click: async () =>  await runApplescript(),
-      },
-      {
-        label: 'Copy Filename',
-        accelerator: 'Cmd+F',
-        click: async () =>  await copyFilename(),
-      },
+        },
+        {
+          label: 'Copy Filename',
+          accelerator: 'Cmd+F',
+          click: async() => await copyFilename(),
+        }
+      ] : [
+        {
+          label: 'Copy Filename',
+          accelerator: 'Ctrl+F',
+          click: async() => await copyFilename(),
+        }
+
+      ]),
     ]
-    }] : []),
+  },
+  // ...(isMac ? [{
+  //   label: 'Run',
+  //   submenu: [
+  //     {
+  //       label: 'Applescript',
+  //       accelerator: 'F5',
+  //       click: async () =>  await runApplescript(),
+  //     },
+  //     {
+  //       label: 'Copy Filename',
+  //       accelerator: 'Cmd+F',
+  //       click: async () =>  await copyFilename(),
+  //     },
+  //   ]
+  //   }] : []),
   {
     label: 'Window',
     submenu: [
