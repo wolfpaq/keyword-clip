@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
@@ -54,6 +54,9 @@ export class AppComponent implements OnInit {
 
   public initialsList: string[];
   public showsList: string[];
+
+  @ViewChild('categorySelectorInput', { static: false }) categorySelectorInput: ElementRef;
+  @ViewChild('filenameSelectorInput', { static: false }) filenameSelectorInput: ElementRef;
 
   constructor(
     private fb: FormBuilder,
@@ -117,6 +120,10 @@ export class AppComponent implements OnInit {
 
       this.electron.ipcRenderer.on('show-settings', () => {
         this.openSettings();
+      });
+
+      this.electron.ipcRenderer.on('select-category', () => {
+        this.focusCategory(this.selectedTab);
       });
     }
   }
@@ -258,6 +265,25 @@ export class AppComponent implements OnInit {
         }
       }
     });
+  }
+
+  public focusCategory(tab: number) {
+    if (tab === 0) {
+      this.categorySelectorInput.nativeElement.focus();
+    } else if (tab === 1) {
+      this.filenameSelectorInput.nativeElement.focus();
+    }
+  }
+
+  public clearFilenameOptions() {
+    this.filenameForm.patchValue({
+      userCategory: '',
+      fxName: '',
+      initials: '',
+      show: '',
+      filenameKeyword: '',
+    });
+    this.updateFilename(null);
   }
 
   private getInitialsList() {
