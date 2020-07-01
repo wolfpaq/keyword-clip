@@ -8,6 +8,8 @@ import { DEFAULT_CATEGORIES } from './default-categories';
 import { ElectronService } from 'ngx-electron';
 import * as xslx from 'xlsx';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
 
 interface CategoryItem {
   category: string;
@@ -16,7 +18,17 @@ interface CategoryItem {
   catShort: string;
   explanations: string;
   synonyms: string;
-};
+}
+
+enum Settings {
+  CATEGORIES = 'categories',
+  AUTORUN_CATEGORY_SCRIPT = 'autorunCategoryScript',
+  AUTORUN_FILENAME_SCRIPT = 'autorunFilenameScript',
+  INITIALS = 'initials',
+  INITIALS_LIST = 'initialsList',
+  SHOW = 'show',
+  SHOWS_LIST = 'showsList',
+}
 
 @Component({
   selector: 'app-root',
@@ -40,15 +52,22 @@ export class AppComponent implements OnInit {
   public isMac = false;
   public selectedTab = 0;
 
+  public initialsList: string[];
+  public showsList: string[];
+
   constructor(
     private fb: FormBuilder,
     private clipboard: ClipboardService,
     private snackBar: MatSnackBar,
     private electron: ElectronService,
+    private dialog: MatDialog,
   ) {
     this.isMac = this.electron.isMacOS;
 
-    const categories = localStorage.getItem('categories');
+    this.initialsList = this.getInitialsList();
+    this.showsList = this.getShowsList();
+
+    const categories = localStorage.getItem(Settings.CATEGORIES);
     if (categories) {
       console.log('loading categories from local storage');
       this.categoryItems = JSON.parse(categories);
@@ -57,7 +76,7 @@ export class AppComponent implements OnInit {
       this.categoryItems = DEFAULT_CATEGORIES;
     }
 
-    const autorunCategoryScript = !!localStorage.getItem('autorunCategoryScript');
+    const autorunCategoryScript = !!localStorage.getItem(Settings.AUTORUN_CATEGORY_SCRIPT);
     this.categoryForm = this.fb.group({
       category: true,
       subCategory: true,
@@ -69,13 +88,13 @@ export class AppComponent implements OnInit {
       autorunCategoryScript,
     });
 
-    const autorunFilenameScript = !!localStorage.getItem('autorunFilenameScript');
+    const autorunFilenameScript = !!localStorage.getItem(Settings.AUTORUN_FILENAME_SCRIPT);
     this.filenameForm = this.fb.group({
       userCategory: '',
       fxName: '',
-      initials: localStorage.getItem('initials') || '',
-      show: localStorage.getItem('show') || '',
-      userInfo: '',
+      initials: localStorage.getItem(Settings.INITIALS) || '',
+      show: localStorage.getItem(Settings.SHOW) || '',
+      // userInfo: '',
       searchFilenameSynonyms: true,
 
       filenameKeyword: this.filenameKeywordControl,
@@ -94,6 +113,10 @@ export class AppComponent implements OnInit {
         if (this.filenameForm.valid) {
           this.copyFilename();
         }
+      });
+
+      this.electron.ipcRenderer.on('show-settings', () => {
+        this.openSettings();
       });
     }
   }
@@ -173,15 +196,16 @@ export class AppComponent implements OnInit {
     const fxName = this.filenameForm.value.fxName || '?';
     const show = this.filenameForm.value.show || '?';
     const initials = this.filenameForm.value.initials || '?';
-    const userInfo = this.filenameForm.value.userInfo ?('_' + this.filenameForm.value.userInfo) : '';
-    this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}${userInfo}`;
+    // const userInfo = this.filenameForm.value.userInfo ?('_' + this.filenameForm.value.userInfo) : '';
+    // this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}${userInfo}`;
+    this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}`;
   }
 
   public copyFilename() {
     this.clipboard.copyText(this.filename);
     this.snackBar.open(`'${this.filename}' copied to the clipboard`, null, { duration: 3000 });
-    localStorage.setItem('initials', this.filenameForm.value.initials);
-    localStorage.setItem('show', this.filenameForm.value.show);
+    localStorage.setItem(Settings.INITIALS, this.filenameForm.value.initials);
+    localStorage.setItem(Settings.SHOW, this.filenameForm.value.show);
 
     if (this.filenameForm.value.autorunFilenameScript) {
       this.runApplescript(this.filenameForm.value.filenameScript);
@@ -202,18 +226,54 @@ export class AppComponent implements OnInit {
 
   public changeAutorunCategoryScript(evt: MatCheckboxChange) {
     if (evt.checked) {
-      localStorage.setItem('autorunCategoryScript', 'true');
+      localStorage.setItem(Settings.AUTORUN_CATEGORY_SCRIPT, 'true');
     } else {
-      localStorage.removeItem('autorunCategoryScript');
+      localStorage.removeItem(Settings.AUTORUN_CATEGORY_SCRIPT);
     }
   }
 
   public changeAutorunFilenameScript(evt: MatCheckboxChange) {
     if (evt.checked) {
-      localStorage.setItem('autorunFilenameScript', 'true');
+      localStorage.setItem(Settings.AUTORUN_FILENAME_SCRIPT, 'true');
     } else {
-      localStorage.removeItem('autorunFilenameScript');
+      localStorage.removeItem(Settings.AUTORUN_FILENAME_SCRIPT);
     }
+  }
+
+  public openSettings() {
+    const dialogRef = this.openSettingsDialog();
+    dialogRef.afterClosed().subscribe((settings) => {
+      if (settings) {
+        if (settings.shows.length > 0) {
+          this.showsList = settings.shows;
+          localStorage.setItem(Settings.SHOWS_LIST, JSON.stringify(this.showsList));
+        }
+        if (settings.initials.length > 0) {
+          this.initialsList = settings.initials;
+          localStorage.setItem(Settings.INITIALS_LIST, JSON.stringify(this.initialsList));
+        }
+        if (settings.resetCategories) {
+          localStorage.removeItem(Settings.CATEGORIES);
+          this.categoryItems = DEFAULT_CATEGORIES;
+        }
+      }
+    });
+  }
+
+  private getInitialsList() {
+    const stored = localStorage.getItem(Settings.INITIALS_LIST);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return []
+  }
+
+  private getShowsList() {
+    const stored = localStorage.getItem(Settings.SHOWS_LIST);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return []
   }
 
   private categoryValidator(control?: AbstractControl): { [key: string]: boolean } | null {
@@ -238,7 +298,7 @@ export class AppComponent implements OnInit {
       row++;
       category = this.getCell(sheet, 'A', row, null);
     }
-    localStorage.setItem('categories', JSON.stringify(this.categoryItems));
+    localStorage.setItem(Settings.CATEGORIES, JSON.stringify(this.categoryItems));
     this.clearCategoryKeyword();
     this.clearFilenameKeyword();
   }
@@ -267,5 +327,15 @@ export class AppComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  private openSettingsDialog() {
+    const allowCategoryReset = !!localStorage.getItem(Settings.CATEGORIES);
+    const config: MatDialogConfig = {
+      disableClose: true,
+      width: '22rem',
+      data: { shows: this.showsList, initials: this.initialsList, allowCategoryReset }
+    };
+    return this.dialog.open(SettingsDialogComponent, config);
   }
 }

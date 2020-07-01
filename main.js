@@ -16,6 +16,12 @@ const template = [
         click: async () =>  await shell.openExternal('https://github.com/wolfpaq/keyword-clip'),
       },
       { type: 'separator' },
+      {
+        label: 'Settings',
+        accelerator: 'Cmd+,',
+        click: async () => await showSettings(),
+      },
+      { type: 'separator' },
       { role: 'services' },
       { type: 'separator' },
       { role: 'hide' },
@@ -28,7 +34,15 @@ const template = [
   {
     label: 'File',
     submenu: [
-      isMac ? { role: 'close' } : { role: 'quit' }
+      ...isMac ? [
+        { role: 'close' }
+      ] : [
+        {
+          label: 'Settings',
+          click: async () => await showSettings(),
+        },
+        { role: 'quit' }
+      ]
     ]
   },
   {
@@ -76,13 +90,13 @@ const template = [
         },
         {
           label: 'Copy Filename',
-          accelerator: 'Cmd+F',
+          accelerator: 'Cmd+D',
           click: async() => await copyFilename(),
         }
       ] : [
         {
           label: 'Copy Filename',
-          accelerator: 'Ctrl+F',
+          accelerator: 'Ctrl+D',
           click: async() => await copyFilename(),
         }
 
@@ -193,6 +207,13 @@ async function runApplescript() {
 async function copyFilename() {
   return new Promise((resolve) => {
     mainWindow.webContents.send('copy-filename');
+    resolve();
+  });
+}
+
+async function showSettings() {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send('show-settings');
     resolve();
   });
 }
