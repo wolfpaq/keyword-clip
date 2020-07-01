@@ -44,11 +44,11 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
 
-  mat-form-field {
-    &:not(:first-child) {
-      margin-left: 1rem;
-    }
-  }
+  // mat-form-field {
+  //   &:not(:first-child) {
+  //     margin-left: 1rem;
+  //   }
+  // }
 }
 
 .category-selector {
@@ -69,6 +69,12 @@ fieldset {
   a {
     cursor: pointer;
   }
+
+  &.file {
+    min-width: 25rem;
+    flex-grow: 1;
+    margin-right: 1rem;
+  }
 }
 
 mat-option {
@@ -81,6 +87,7 @@ mat-option {
     font-size: smaller;
     padding-top: .5rem;
     padding-bottom: 1rem;
+    white-space: normal;
   }
 }
 

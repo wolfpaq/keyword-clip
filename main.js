@@ -58,10 +58,22 @@ const template = [
         { role: 'pasteAndMatchStyle' },
         { role: 'delete' },
         { role: 'selectAll' },
+        { role: 'separator' },
+        {
+          label: 'Select Category',
+          accelerator: 'Cmd+F',
+          click: async () => await selectCategory()
+        }
       ] : [
         { role: 'delete' },
         { type: 'separator' },
-        { role: 'selectAll' }
+        { role: 'selectAll' },
+        { role: 'separator' },
+        {
+          label: 'Select Category',
+          accelerator: 'Ctrl+F',
+          click: async () => await selectCategory()
+        }
       ]),
     ]
   },
@@ -151,8 +163,8 @@ let mainWindow
 
 function createWindow () {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1485,
+    height: 675,
     minWidth: 500,
     minHeight: 500,
     webPreferences: {
@@ -217,4 +229,12 @@ async function showSettings() {
     resolve();
   });
 }
+
+async function selectCategory() {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send('select-category');
+    resolve();
+  });
+}
+
 

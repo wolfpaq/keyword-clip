@@ -18,6 +18,7 @@
       <div class="category-selector">
         <mat-form-field>
           <input
+            #categorySelectorInput
             matInput
             tab-directive
             type="text"
@@ -61,61 +62,69 @@
 
   <mat-tab label="Filename">
     <form [formGroup]="filenameForm">
-      <fieldset>
-        <legend>Options</legend>
-        <div class="category-selector">
-          <mat-form-field>
-            <input
-              matInput
-              tab-directive
-              type="text"
-              placeholder="Select Category"
-              matTooltip="Select the category to use in the filename."
-              [matAutocomplete]="filenameAuto"
-              formControlName="filenameKeyword"
-              required
-            >
-            <a mat-button class="clear" *ngIf="filenameForm.value.filenameKeyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearFilenameKeyword()">
-              <mat-icon color="primary">close</mat-icon>
-            </a>
-            <label for="import-file" matSuffix>
-              <a mat-icon-button class="import" matTooltip="Import Category File">
-                <mat-icon color="accent">unarchive</mat-icon>
+      <fieldset class="filename-options">
+        <legend>
+          Options
+          <a mat-icon-button color="accent" (click)="clearFilenameOptions()" matTooltip="Clear options">
+            <mat-icon>delete</mat-icon>
+          </a>
+        </legend>
+        <div class="filename-options">
+          <div class="category-selector file">
+            <mat-form-field>
+              <input
+                #filenameSelectorInput
+                matInput
+                tab-directive
+                type="text"
+                placeholder="Select Category"
+                matTooltip="Select the category to use in the filename."
+                [matAutocomplete]="filenameAuto"
+                formControlName="filenameKeyword"
+                required
+              >
+              <a mat-button class="clear" *ngIf="filenameForm.value.filenameKeyword" matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear Selection" (click)="clearFilenameKeyword()">
+                <mat-icon color="primary">close</mat-icon>
               </a>
-            </label>
-            </mat-form-field>
-          <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
-        </div>
-        <div class="options">
-          <div class="clip-options">
-            <mat-form-field>
-              <input matInput formControlName="userCategory" placeholder="User Category (optional)" (input)="updateFilename(null)">
-            </mat-form-field>
-            <mat-form-field>
-              <input matInput formControlName="fxName" required placeholder="FX Name" (input)="updateFilename(null)">
-            </mat-form-field>
-            <mat-form-field *ngIf="initialsList?.length <= 1">
-              <input matInput formControlName="initials" required placeholder="User Initials" (input)="updateFilename(null)">
-            </mat-form-field>
-            <mat-form-field *ngIf="initialsList?.length > 1">
-              <mat-select formControlName="initials" required placeholder="User Initials" (selectionChange)="updateFilename(null)">
-                <mat-option *ngFor="let i of initialsList" [value]="i">{{i}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field *ngIf="showsList?.length <= 1">
-              <input matInput formControlName="show" required placeholder="Show Name" (input)="updateFilename(null)">
-            </mat-form-field>
-            <mat-form-field *ngIf="showsList?.length > 1">
-              <mat-select formControlName="show" required placeholder="Show Name" (selectionChange)="updateFilename(null)">
-                <mat-option *ngFor="let s of showsList" [value]="s">{{s}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <!-- <mat-form-field>
-              <input matInput formControlName="userInfo" placeholder="User Info (optional)" (input)="updateFilename(null)">
-            </mat-form-field> -->
+              <label for="import-file" matSuffix>
+                <a mat-icon-button class="import" matTooltip="Import Category File">
+                  <mat-icon color="accent">unarchive</mat-icon>
+                </a>
+              </label>
+              </mat-form-field>
+            <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
           </div>
-          <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
-            <mat-checkbox color="accent" class="synonyms" formControlName="searchFilenameSynonyms">Search Synonyms</mat-checkbox>
+          <div class="options">
+            <div class="clip-options">
+              <mat-form-field>
+                <input matInput formControlName="userCategory" placeholder="User Category (optional)" (input)="updateFilename(null)">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput formControlName="fxName" required placeholder="FX Name" (input)="updateFilename(null)">
+              </mat-form-field>
+              <mat-form-field *ngIf="initialsList?.length <= 1">
+                <input matInput formControlName="initials" required placeholder="User Initials" (input)="updateFilename(null)">
+              </mat-form-field>
+              <mat-form-field *ngIf="initialsList?.length > 1">
+                <mat-select formControlName="initials" required placeholder="User Initials" (selectionChange)="updateFilename(null)">
+                  <mat-option *ngFor="let i of initialsList" [value]="i">{{i}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field *ngIf="showsList?.length <= 1">
+                <input matInput formControlName="show" required placeholder="Show Name" (input)="updateFilename(null)">
+              </mat-form-field>
+              <mat-form-field *ngIf="showsList?.length > 1">
+                <mat-select formControlName="show" required placeholder="Show Name" (selectionChange)="updateFilename(null)">
+                  <mat-option *ngFor="let s of showsList" [value]="s">{{s}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!-- <mat-form-field>
+                <input matInput formControlName="userInfo" placeholder="User Info (optional)" (input)="updateFilename(null)">
+              </mat-form-field> -->
+            </div>
+            <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
+              <mat-checkbox color="accent" class="synonyms" formControlName="searchFilenameSynonyms">Search Synonyms</mat-checkbox>
+            </div>
           </div>
         </div>
       </fieldset>
