@@ -182,7 +182,7 @@ export class AppComponent implements OnInit {
     reader.onload = (e: any) => {
       const data = new Uint8Array(e.target.result);
       const workbook = xslx.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames.find((name) => name.indexOf('7.0') >= 0);
+      const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
       this.loadSheet(sheet);
     };
