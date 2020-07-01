@@ -68,7 +68,7 @@ const template = [
         { role: 'delete' },
         { type: 'separator' },
         { role: 'selectAll' },
-        { role: 'separator' },
+        { type: 'separator' },
         {
           label: 'Select Category',
           accelerator: 'Ctrl+F',
