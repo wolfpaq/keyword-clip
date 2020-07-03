@@ -20,12 +20,14 @@ import { TabDirective } from './tab-directive';
 import { ClipboardService } from './clipboard.service';
 import { NgxElectronModule } from 'ngx-electron';
 import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TabDirective,
     SettingsDialogComponent,
+    AboutDialogComponent,
   ],
   imports: [
     BrowserModule,

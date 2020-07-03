@@ -13,7 +13,7 @@ const template = [
       // { role: 'about' },
       {
         label: 'About AudioCategoryClipper',
-        click: async () =>  await shell.openExternal('https://github.com/wolfpaq/keyword-clip'),
+        click: async () =>  await showAbout(),
       },
       { type: 'separator' },
       {
@@ -150,7 +150,7 @@ const template = [
     submenu: [
       {
         label: 'About',
-        click: async () =>  await shell.openExternal('https://github.com/wolfpaq/keyword-clip'),
+        click: async () =>  await showAbout(),
       }
     ]
   }
@@ -233,6 +233,13 @@ async function showSettings() {
 async function selectCategory() {
   return new Promise((resolve) => {
     mainWindow.webContents.send('select-category');
+    resolve();
+  });
+}
+
+async function showAbout() {
+  return new Promise((resolve) => {
+    mainWindow.webContents.send('show-about', app.getVersion());
     resolve();
   });
 }

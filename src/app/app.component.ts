@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Observable, AsyncSubject } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl, FormGroup, FormBuilder, AbstractControl } from '@angular/forms';
 import { ClipboardService } from './clipboard.service';
@@ -8,8 +8,9 @@ import { DEFAULT_CATEGORIES } from './default-categories';
 import { ElectronService } from 'ngx-electron';
 import * as xslx from 'xlsx';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 interface CategoryItem {
   category: string;
@@ -64,6 +65,7 @@ export class AppComponent implements OnInit {
     private snackBar: MatSnackBar,
     private electron: ElectronService,
     private dialog: MatDialog,
+    private zone: NgZone,
   ) {
     this.isMac = this.electron.isMacOS;
 
@@ -124,6 +126,10 @@ export class AppComponent implements OnInit {
 
       this.electron.ipcRenderer.on('select-category', () => {
         this.focusCategory(this.selectedTab);
+      });
+
+      this.electron.ipcRenderer.on('show-about', (evt, version) => {
+        this.openAboutDialog(version);
       });
     }
   }
@@ -248,22 +254,23 @@ export class AppComponent implements OnInit {
   }
 
   public openSettings() {
-    const dialogRef = this.openSettingsDialog();
-    dialogRef.afterClosed().subscribe((settings) => {
-      if (settings) {
-        if (settings.shows.length > 0) {
-          this.showsList = settings.shows;
-          localStorage.setItem(Settings.SHOWS_LIST, JSON.stringify(this.showsList));
+    this.openSettingsDialog().subscribe((dialogRef) => {
+      dialogRef.afterClosed().subscribe((settings) => {
+        if (settings) {
+          if (settings.shows.length > 0) {
+            this.showsList = settings.shows;
+            localStorage.setItem(Settings.SHOWS_LIST, JSON.stringify(this.showsList));
+          }
+          if (settings.initials.length > 0) {
+            this.initialsList = settings.initials;
+            localStorage.setItem(Settings.INITIALS_LIST, JSON.stringify(this.initialsList));
+          }
+          if (settings.resetCategories) {
+            localStorage.removeItem(Settings.CATEGORIES);
+            this.categoryItems = DEFAULT_CATEGORIES;
+          }
         }
-        if (settings.initials.length > 0) {
-          this.initialsList = settings.initials;
-          localStorage.setItem(Settings.INITIALS_LIST, JSON.stringify(this.initialsList));
-        }
-        if (settings.resetCategories) {
-          localStorage.removeItem(Settings.CATEGORIES);
-          this.categoryItems = DEFAULT_CATEGORIES;
-        }
-      }
+      });
     });
   }
 
@@ -355,13 +362,29 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  private openSettingsDialog() {
-    const allowCategoryReset = !!localStorage.getItem(Settings.CATEGORIES);
-    const config: MatDialogConfig = {
-      disableClose: true,
-      width: '22rem',
-      data: { shows: this.showsList, initials: this.initialsList, allowCategoryReset }
-    };
-    return this.dialog.open(SettingsDialogComponent, config);
+  private openSettingsDialog(): Observable<MatDialogRef<SettingsDialogComponent>> {
+    const subject = new AsyncSubject<MatDialogRef<SettingsDialogComponent>>();
+    this.zone.run(() => {
+      const allowCategoryReset = !!localStorage.getItem(Settings.CATEGORIES);
+      const config: MatDialogConfig = {
+        disableClose: true,
+        width: '22rem',
+        data: { shows: this.showsList, initials: this.initialsList, allowCategoryReset }
+      };
+      subject.next(this.dialog.open(SettingsDialogComponent, config));
+      subject.complete();
+    });
+    return subject;
+  }
+
+  private openAboutDialog(version: string) {
+    this.zone.run(() => {
+      const config: MatDialogConfig = {
+        disableClose: false,
+        autoFocus: false,
+        data: { version }
+      };
+      this.dialog.open(AboutDialogComponent, config);
+    });
   }
 }
