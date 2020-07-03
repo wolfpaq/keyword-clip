@@ -44,6 +44,14 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
 
+  >mat-form-field {
+    margin-right: 1rem;
+  }
+
+  .search-options {
+    margin: auto 0 auto auto
+  }
+
   // mat-form-field {
   //   &:not(:first-child) {
   //     margin-left: 1rem;

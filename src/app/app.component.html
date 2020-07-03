@@ -94,8 +94,8 @@
               </mat-form-field>
             <input id="import-file" type="file" class="hide" (change)="importFile($event)" accept=".xlsx" />
           </div>
-          <div class="options">
-            <div class="clip-options">
+          <!-- <div class="options">
+            <div class="clip-options"> -->
               <mat-form-field>
                 <input matInput formControlName="userCategory" placeholder="User Category (optional)" (input)="updateFilename(null)">
               </mat-form-field>
@@ -118,15 +118,15 @@
                   <mat-option *ngFor="let s of showsList" [value]="s">{{s}}</mat-option>
                 </mat-select>
               </mat-form-field>
-              <!-- <mat-form-field>
-                <input matInput formControlName="userInfo" placeholder="User Info (optional)" (input)="updateFilename(null)">
-              </mat-form-field> -->
+              <mat-form-field>
+                <input matInput formControlName="userInfo" placeholder="User Data (optional)" (input)="updateFilename(null)">
+              </mat-form-field>
+              <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
+                <mat-checkbox color="accent" class="synonyms" formControlName="searchFilenameSynonyms">Search Synonyms</mat-checkbox>
+              </div>
             </div>
-            <div class="search-options" matTooltip="Enable/disable searching of synonyms.">
-              <mat-checkbox color="accent" class="synonyms" formControlName="searchFilenameSynonyms">Search Synonyms</mat-checkbox>
-            </div>
-          </div>
-        </div>
+          <!-- </div>
+        </div> -->
       </fieldset>
 
       <mat-autocomplete #filenameAuto="matAutocomplete" [displayWith]="formatCategoryItem" autoActiveFirstOption="true">

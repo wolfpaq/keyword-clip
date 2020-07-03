@@ -99,7 +99,7 @@ export class AppComponent implements OnInit {
       fxName: '',
       initials: localStorage.getItem(Settings.INITIALS) || '',
       show: localStorage.getItem(Settings.SHOW) || '',
-      // userInfo: '',
+      userInfo: '',
       searchFilenameSynonyms: true,
 
       filenameKeyword: this.filenameKeywordControl,
@@ -209,9 +209,8 @@ export class AppComponent implements OnInit {
     const fxName = this.filenameForm.value.fxName || '?';
     const show = this.filenameForm.value.show || '?';
     const initials = this.filenameForm.value.initials || '?';
-    // const userInfo = this.filenameForm.value.userInfo ?('_' + this.filenameForm.value.userInfo) : '';
-    // this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}${userInfo}`;
-    this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}`;
+    const userInfo = this.filenameForm.value.userInfo ?('_' + this.filenameForm.value.userInfo) : '';
+    this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}${userInfo}`;
   }
 
   public copyFilename() {
