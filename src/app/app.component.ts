@@ -19,6 +19,7 @@ interface CategoryItem {
   catShort: string;
   explanations: string;
   synonyms: string;
+  filterTestValue: string;
 }
 
 enum Settings {
@@ -317,13 +318,17 @@ export class AppComponent implements OnInit {
     let category = this.getCell(sheet, 'A', row, null);
     this.categoryItems = [];
     while (category) {
+      const subCategory = this.getCell(sheet, 'B', row);
+      const catID = this.getCell(sheet, 'C', row);
+      const filterTestValue = category.toLowerCase() + subCategory.toLowerCase() + catID.toLowerCase();
       const item: CategoryItem = {
         category,
-        subCategory: this.getCell(sheet, 'B', row),
-        catID: this.getCell(sheet, 'C', row),
+        subCategory,
+        catID,
         catShort: this.getCell(sheet, 'D', row),
         explanations: this.getCell(sheet, 'E', row),
         synonyms: this.getCell(sheet, 'F', row, '!!!'),
+        filterTestValue,
       };
       this.categoryItems.push(item);
 
@@ -341,16 +346,18 @@ export class AppComponent implements OnInit {
   }
 
   private filterItems(value: string | CategoryItem, synonyms: boolean): CategoryItem[] {
-    const filterValue = typeof(value) === 'string' ? value.toLowerCase() : this.formatCategoryItem(value);
+    const filterValue = typeof(value) === 'string' ? this.sanitizeFilter(value) : this.formatCategoryItem(value);
     return this.categoryItems.filter((item) => {
-      let found = item.category.toLowerCase().includes(filterValue) ||
-        item.subCategory.toLocaleLowerCase().includes(filterValue) ||
-        item.catID.toLocaleLowerCase().includes(filterValue);
+      let found = item.filterTestValue.includes(filterValue);
       if (!found && synonyms) {
         found = item.synonyms.toLocaleLowerCase().includes(filterValue);
       }
       return found;
     });
+  }
+
+  private sanitizeFilter(value: string): string {
+    return value.replace(/\s+/g, '').trim().toLocaleLowerCase();
   }
 
   private runApplescript(script: string): boolean {
