@@ -97,6 +97,7 @@ export class AppComponent implements OnInit {
     const autorunFilenameScript = !!localStorage.getItem(Settings.AUTORUN_FILENAME_SCRIPT);
     this.filenameForm = this.fb.group({
       userCategory: '',
+      vendorCategory: '',
       fxName: '',
       initials: localStorage.getItem(Settings.INITIALS) || '',
       show: localStorage.getItem(Settings.SHOW) || '',
@@ -207,11 +208,12 @@ export class AppComponent implements OnInit {
     const selectedItem = item ? item : this.filenameForm.value.filenameKeyword;
     const catId = selectedItem ? selectedItem.catID : '?';
     const userCategory = this.filenameForm.value.userCategory ? ('-' + this.filenameForm.value.userCategory) : '';
+    const vendorCategory = this.filenameForm.value.vendorCategory ? (this.filenameForm.value.vendorCategory + '-') : '';
     const fxName = this.filenameForm.value.fxName || '?';
     const show = this.filenameForm.value.show || '?';
     const initials = this.filenameForm.value.initials || '?';
     const userInfo = this.filenameForm.value.userInfo ?('_' + this.filenameForm.value.userInfo) : '';
-    this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}${userInfo}`;
+    this.filename = `${catId}${userCategory}_${vendorCategory}${fxName}_${initials}_${show}${userInfo}`;
   }
 
   public copyFilename() {
@@ -285,6 +287,7 @@ export class AppComponent implements OnInit {
   public clearFilenameOptions() {
     this.filenameForm.patchValue({
       userCategory: '',
+      vendorCategory: '',
       fxName: '',
       initials: '',
       show: '',
