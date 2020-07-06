@@ -100,21 +100,24 @@
                 <input matInput formControlName="userCategory" placeholder="User Category (optional)" (input)="updateFilename(null)">
               </mat-form-field>
               <mat-form-field>
+                <input matInput formControlName="vendorCategory" placeholder="Vendor Category (optional)" (input)="updateFilename(null)">
+              </mat-form-field>
+              <mat-form-field>
                 <input matInput formControlName="fxName" required placeholder="FX Name" (input)="updateFilename(null)">
               </mat-form-field>
               <mat-form-field *ngIf="initialsList?.length <= 1">
-                <input matInput formControlName="initials" required placeholder="User Initials" (input)="updateFilename(null)">
+                <input matInput formControlName="initials" required placeholder="CreatorID" (input)="updateFilename(null)">
               </mat-form-field>
               <mat-form-field *ngIf="initialsList?.length > 1">
-                <mat-select formControlName="initials" required placeholder="User Initials" (selectionChange)="updateFilename(null)">
+                <mat-select formControlName="initials" required placeholder="CreatorID" (selectionChange)="updateFilename(null)">
                   <mat-option *ngFor="let i of initialsList" [value]="i">{{i}}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field *ngIf="showsList?.length <= 1">
-                <input matInput formControlName="show" required placeholder="Show Name" (input)="updateFilename(null)">
+                <input matInput formControlName="show" required placeholder="SourceID" (input)="updateFilename(null)">
               </mat-form-field>
               <mat-form-field *ngIf="showsList?.length > 1">
-                <mat-select formControlName="show" required placeholder="Show Name" (selectionChange)="updateFilename(null)">
+                <mat-select formControlName="show" required placeholder="SourceID" (selectionChange)="updateFilename(null)">
                   <mat-option *ngFor="let s of showsList" [value]="s">{{s}}</mat-option>
                 </mat-select>
               </mat-form-field>

@@ -19,6 +19,7 @@ interface CategoryItem {
   catShort: string;
   explanations: string;
   synonyms: string;
+  filterTestValue: string;
 }
 
 enum Settings {
@@ -96,6 +97,7 @@ export class AppComponent implements OnInit {
     const autorunFilenameScript = !!localStorage.getItem(Settings.AUTORUN_FILENAME_SCRIPT);
     this.filenameForm = this.fb.group({
       userCategory: '',
+      vendorCategory: '',
       fxName: '',
       initials: localStorage.getItem(Settings.INITIALS) || '',
       show: localStorage.getItem(Settings.SHOW) || '',
@@ -206,11 +208,12 @@ export class AppComponent implements OnInit {
     const selectedItem = item ? item : this.filenameForm.value.filenameKeyword;
     const catId = selectedItem ? selectedItem.catID : '?';
     const userCategory = this.filenameForm.value.userCategory ? ('-' + this.filenameForm.value.userCategory) : '';
+    const vendorCategory = this.filenameForm.value.vendorCategory ? (this.filenameForm.value.vendorCategory + '-') : '';
     const fxName = this.filenameForm.value.fxName || '?';
     const show = this.filenameForm.value.show || '?';
     const initials = this.filenameForm.value.initials || '?';
     const userInfo = this.filenameForm.value.userInfo ?('_' + this.filenameForm.value.userInfo) : '';
-    this.filename = `${catId}${userCategory}_${fxName}_${initials}_${show}${userInfo}`;
+    this.filename = `${catId}${userCategory}_${vendorCategory}${fxName}_${initials}_${show}${userInfo}`;
   }
 
   public copyFilename() {
@@ -284,10 +287,12 @@ export class AppComponent implements OnInit {
   public clearFilenameOptions() {
     this.filenameForm.patchValue({
       userCategory: '',
+      vendorCategory: '',
       fxName: '',
       initials: '',
       show: '',
       filenameKeyword: '',
+      userInfo: '',
     });
     this.updateFilename(null);
   }
@@ -317,13 +322,17 @@ export class AppComponent implements OnInit {
     let category = this.getCell(sheet, 'A', row, null);
     this.categoryItems = [];
     while (category) {
+      const subCategory = this.getCell(sheet, 'B', row);
+      const catID = this.getCell(sheet, 'C', row);
+      const filterTestValue = category.toLowerCase() + subCategory.toLowerCase() + catID.toLowerCase();
       const item: CategoryItem = {
         category,
-        subCategory: this.getCell(sheet, 'B', row),
-        catID: this.getCell(sheet, 'C', row),
+        subCategory,
+        catID,
         catShort: this.getCell(sheet, 'D', row),
         explanations: this.getCell(sheet, 'E', row),
         synonyms: this.getCell(sheet, 'F', row, '!!!'),
+        filterTestValue,
       };
       this.categoryItems.push(item);
 
@@ -341,16 +350,18 @@ export class AppComponent implements OnInit {
   }
 
   private filterItems(value: string | CategoryItem, synonyms: boolean): CategoryItem[] {
-    const filterValue = typeof(value) === 'string' ? value.toLowerCase() : this.formatCategoryItem(value);
+    const filterValue = typeof(value) === 'string' ? this.sanitizeFilter(value) : this.formatCategoryItem(value);
     return this.categoryItems.filter((item) => {
-      let found = item.category.toLowerCase().includes(filterValue) ||
-        item.subCategory.toLocaleLowerCase().includes(filterValue) ||
-        item.catID.toLocaleLowerCase().includes(filterValue);
+      let found = item.filterTestValue.includes(filterValue);
       if (!found && synonyms) {
         found = item.synonyms.toLocaleLowerCase().includes(filterValue);
       }
       return found;
     });
+  }
+
+  private sanitizeFilter(value: string): string {
+    return value.replace(/\s+/g, '').trim().toLocaleLowerCase();
   }
 
   private runApplescript(script: string): boolean {
