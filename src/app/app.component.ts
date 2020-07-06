@@ -289,6 +289,7 @@ export class AppComponent implements OnInit {
       initials: '',
       show: '',
       filenameKeyword: '',
+      userInfo: '',
     });
     this.updateFilename(null);
   }
