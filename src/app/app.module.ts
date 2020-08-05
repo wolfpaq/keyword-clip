@@ -16,7 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
-import { TabDirective } from './tab-directive';
+import { TabDirective } from './tab.directive';
 import { ClipboardService } from './clipboard.service';
 import { NgxElectronModule } from 'ngx-electron';
 import { SettingsDialogComponent } from './settings-dialog/settings-dialog.component';
