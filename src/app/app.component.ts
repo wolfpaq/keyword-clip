@@ -75,10 +75,10 @@ export class AppComponent implements OnInit {
 
     const categories = localStorage.getItem(Settings.CATEGORIES);
     if (categories) {
-      console.log('loading categories from local storage');
+      console.info('loading categories from local storage');
       this.categoryItems = JSON.parse(categories);
     } else {
-      console.log('loading default categories');
+      console.info('loading default categories');
       this.categoryItems = DEFAULT_CATEGORIES;
     }
 
@@ -262,10 +262,16 @@ export class AppComponent implements OnInit {
           if (settings.shows.length > 0) {
             this.showsList = settings.shows;
             localStorage.setItem(Settings.SHOWS_LIST, JSON.stringify(this.showsList));
+          } else {
+            this.showsList = [];
+            localStorage.removeItem(Settings.SHOWS_LIST);
           }
           if (settings.initials.length > 0) {
             this.initialsList = settings.initials;
             localStorage.setItem(Settings.INITIALS_LIST, JSON.stringify(this.initialsList));
+          } else {
+            this.initialsList = [];
+            localStorage.removeItem(Settings.INITIALS_LIST);
           }
           if (settings.resetCategories) {
             localStorage.removeItem(Settings.CATEGORIES);
@@ -302,7 +308,7 @@ export class AppComponent implements OnInit {
     if (stored) {
       return JSON.parse(stored);
     }
-    return []
+    return [];
   }
 
   private getShowsList() {
@@ -310,7 +316,7 @@ export class AppComponent implements OnInit {
     if (stored) {
       return JSON.parse(stored);
     }
-    return []
+    return [];
   }
 
   private categoryValidator(control?: AbstractControl): { [key: string]: boolean } | null {
@@ -350,7 +356,7 @@ export class AppComponent implements OnInit {
   }
 
   private filterItems(value: string | CategoryItem, synonyms: boolean): CategoryItem[] {
-    const filterValue = typeof(value) === 'string' ? this.sanitizeFilter(value) : this.formatCategoryItem(value);
+    const filterValue = typeof(value) === 'string' ? this.sanitizeFilter(value) : value.filterTestValue;
     return this.categoryItems.filter((item) => {
       let found = item.filterTestValue.includes(filterValue);
       if (!found && synonyms) {
