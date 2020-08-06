@@ -58,7 +58,6 @@ describe('AppComponent', () => {
     }).compileComponents();
 
     spyOn(console, 'info');
-
   }));
 
   afterEach(() => {
