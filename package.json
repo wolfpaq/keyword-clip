@@ -52,7 +52,7 @@
     "@types/node": "^12.12.47",
     "@types/webpack-env": "^1.15.2",
     "codelyzer": "^6.0.0",
-    "electron": "^9.1.1",
+    "electron": "^13.6.6",
     "electron-packager": "^15.0.0",
     "electron-reload": "^1.5.0",
     "jasmine-core": "~3.6.0",
